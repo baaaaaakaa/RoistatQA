@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Standup Form</title>
+
+  <style>
+    :root{
+      --bg:#f3f6fb;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --muted2:#9ca3af;
+      --border:#e6eaf2;
+
+      --primary1:#2f80ed;
+      --primary2:#6d5efc;
+
+      --shadow: 0 18px 60px rgba(17,24,39,.10);
+      --shadow2: 0 10px 30px rgba(17,24,39,.08);
+
+      --radius:16px;
+      --radiusSm:12px;
+
+      --focusBorder: rgba(47,128,237,.55);
+      --focusRing: 0 0 0 4px rgba(47,128,237,.16);
+
+      --container: 1000px;
+
+      --headingColor: rgb(71, 71, 102);
+      --secondaryText: rgb(0, 105, 229);
+
+      /* NEW: single font var */
+      --font: "PT Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans";
+    }
+
+    *{ box-sizing:border-box; }
+    html, body { height: auto; min-height: 100%; }
+
+    body{
+      margin:0;
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--text);
+      background:
+        radial-gradient(1100px 500px at 50% -50px, rgba(47,128,237,.10), transparent 60%),
+        radial-gradient(900px 420px at 10% 0%, rgba(109,94,252,.08), transparent 55%),
+        var(--bg);
+      padding: 48px 18px 72px;
+    }
+
+    /* ensure all elements inherit PT Sans */
+    body, button, input, select, textarea, pre, .editor, .popover { font-family: var(--font); }
+
+    .container{
+      width:100%;
+      max-width: var(--container);
+      margin: 0 auto;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
+      align-items: stretch;
+    }
+    @media (max-width: 920px){
+      body{ padding: 36px 14px 64px; }
+      .grid{ grid-template-columns: 1fr; gap: 14px; }
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      padding: 20px 20px 18px;
+    }
+
+    .card--sameHeight{
+      display:flex;
+      flex-direction: column;
+      min-height: 420px;
+    }
+    .card--sameHeight .grow{
+      flex: 1 1 auto;
+      display:flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .card--sameHeight textarea,
+    .card--sameHeight .editor{
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    /* UPDATED: PT Sans everywhere (removed SuisseIntl/Inter) */
+    .sectionHeading{
+      text-size-adjust: 100%;
+      font-family: var(--font);
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 36px;
+      text-align: left;
+      color: var(--headingColor);
+      margin: 0 0 10px;
+      letter-spacing: -0.01em;
+    }
+
+    textarea, select{
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--radiusSm);
+      padding: 12px 12px;
+      font-size: 14px;
+      outline: none;
+      background:#fff;
+      color: var(--text);
+      transition: box-shadow .15s ease, border-color .15s ease;
+    }
+    textarea{ resize: vertical; }
+
+    textarea:focus, select:focus{
+      border-color: var(--focusBorder);
+      box-shadow: var(--focusRing);
+    }
+
+    .editor{
+      border: 1px solid var(--border);
+      border-radius: var(--radiusSm);
+      padding: 12px 12px;
+      background:#fff;
+      color: var(--text);
+      white-space: pre-wrap;
+      outline:none;
+      line-height: 1.55;
+      transition: box-shadow .15s ease, border-color .15s ease;
+    }
+    .editor:focus{
+      border-color: var(--focusBorder);
+      box-shadow: var(--focusRing);
+    }
+
+    .hint{
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+      text-align: left;
+    }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    button{
+      font-family: var(--font);
+      border: 0;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: transform .06s ease, background .18s ease, filter .18s ease, border-color .18s ease;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+      line-height: 20px;
+      box-shadow: none !important;
+    }
+    button:active{ transform: translateY(1px); }
+    button:focus{ outline:none; }
+    button:focus-visible{ box-shadow: 0 0 0 4px rgba(47,128,237,.20) !important; }
+
+    .btn-primary{
+      color:#fff;
+      background: #2589ff;
+    }
+    .btn-primary:hover{
+      background: #0069E5;
+    }
+
+    .btn-secondary{
+      color: var(--secondaryText);
+      background:#ffffff;
+      border: 1px solid #D1D4D6;
+    }
+    .btn-secondary:hover{
+      background:#EFF6FF;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      padding: 2px 10px;
+      margin: 0 2px;
+      border-radius: 8px;
+      background: rgba(47,128,237,.10);
+      color: var(--headingColor);
+      border: 1px solid rgba(47,128,237,.22);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      vertical-align: baseline;
+      box-shadow: none;
+      line-height: 16px;
+      font-family: var(--font);
+    }
+    .chip[data-empty="1"]{
+      background: rgba(107,114,128,.10);
+      color: rgba(71,71,102,.75);
+      border-color: rgba(71,71,102,.18);
+    }
+    .chip[data-open="1"]{
+      outline: 3px solid rgba(47,128,237,.18);
+      background: rgba(47,128,237,.14);
+      border-color: rgba(47,128,237,.30);
+    }
+
+    pre{
+      font-family: var(--font);
+      background:#0b1220;
+      color:#e5e7eb;
+      padding: 14px 14px;
+      border-radius: var(--radiusSm);
+      overflow:auto;
+      white-space: pre-wrap;
+      line-height: 1.55;
+      margin: 0;
+      border: 1px solid rgba(255,255,255,.06);
+      text-align: left;
+    }
+
+    .popover{
+      position: fixed;
+      z-index: 9999;
+      width: 392px;
+      background: #ffffff;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+      display: none;
+      font-family: var(--font);
+    }
+    .popover .title{
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+      color: rgb(71, 71, 102);
+      text-align: left;
+      font-family: var(--font);
+    }
+    .popover select{
+      min-height: 100px;
+      background:#fff;
+      color: rgb(71, 71, 102);
+      font-family: var(--font);
+    }
+    .popover .actions{
+      margin-top: 10px;
+      display:flex;
+      gap: 10px;
+    }
+    .popover .actions button{ flex:1; }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="grid">
+      <div class="card card--sameHeight">
+        <h2 class="sectionHeading">Вчера</h2>
+        <div class="grow">
+          <textarea id="yesterday" required></textarea>
+        </div>
+        <div class="actions">
+          <button class="btn-secondary" type="button" onclick="resetYesterday()">Вставить шаблон</button>
+        </div>
+      </div>
+
+      <div class="card card--sameHeight">
+        <h2 class="sectionHeading">Сегодня</h2>
+        <div class="grow">
+          <div id="todayEditor" class="editor" contenteditable="true"></div>
+          <div class="hint">Для множественного выбора зажми CTRL (или ⌘ на Mac).</div>
+        </div>
+        <div class="actions">
+          <button class="btn-secondary" type="button" onclick="resetToday()">Вставить шаблон</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <h2 class="sectionHeading">Проблемы</h2>
+      <textarea id="problems" rows="5" required></textarea>
+      <div class="actions">
+        <button class="btn-primary" type="button" onclick="generateOutput()">Сгенерировать сообщение</button>
+        <button class="btn-secondary" type="button" onclick="fillDefaults()">Заполнить все шаблоны</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <h2 class="sectionHeading">Готовое сообщение</h2>
+      <pre id="output"></pre>
+      <div class="actions">
+        <button class="btn-primary" type="button" onclick="copyOutput()">Скопировать</button>
+      </div>
+    </div>
+
+    <div id="popover" class="popover">
+      <div class="title" id="popoverTitle">QA</div>
+      <select id="popoverSelect" multiple></select>
+      <div class="actions">
+        <button class="btn-primary" type="button" onclick="applyPopover()">Применить</button>
+        <button class="btn-secondary" type="button" onclick="closePopover()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const qaPeople = ["@chibrikin.a","@alekseeva.li","@sukhanov.yu","@smirnova.ksu"];
+
+  const chipState = { rel1_lead: [], rel1_part: [], rel2_lead: [], rel2_part: [], acc1: [], acc2: [] };
+
+  const chipTitles = {
+    rel1_lead: "Проведем 1 релиз — ведет",
+    rel1_part: "Проведем 1 релиз — участвуют",
+    rel2_lead: "Проведем 2 релиз — ведет",
+    rel2_part: "Проведем 2 релиз — участвуют",
+    acc1: "Проведем приемку #1 — QA",
+    acc2: "Проведем приемку #2 — QA"
+  };
+
+  const yesterdayTemplate =
+`* Провели  релиза
+* Провели приемку
+* Не провели приемку`;
+
+  function mentions(arr){ return (arr && arr.length) ? arr.join(", ") : "—"; }
+
+  function chipHTML(id){
+    const val = mentions(chipState[id]);
+    const empty = (val === "—") ? "1" : "0";
+    return `<span class="chip" data-chip="${id}" data-empty="${empty}" contenteditable="false">${escapeHtml(val)}</span>`;
+  }
+
+  function todayTemplateHTML(){
+    return `* Проведем 1 релиз - ведет ${chipHTML("rel1_lead")}, участвуют ${chipHTML("rel1_part")}
+* Проведем 2 релиз - ведет ${chipHTML("rel2_lead")}, участвуют ${chipHTML("rel2_part")}
+* Проведем приемку QA ${chipHTML("acc1")}
+* Проведем приемку QA ${chipHTML("acc2")}`;
+  }
+
+  function resetYesterday(){ document.getElementById("yesterday").value = yesterdayTemplate; }
+
+  function resetToday(){
+    document.getElementById("todayEditor").innerHTML = todayTemplateHTML();
+    document.querySelectorAll(".chip").forEach(c => c.dataset.open = "0");
+  }
+
+  function fillDefaults(){
+    resetYesterday();
+    resetToday();
+    if (!document.getElementById("problems").value.trim()) document.getElementById("problems").value = "* —";
+  }
+
+  let currentChipId = null;
+
+  function populatePopoverOptions(){
+    const sel = document.getElementById("popoverSelect");
+    sel.innerHTML = "";
+    qaPeople.forEach(v => {
+      const opt = document.createElement("option");
+      opt.value = v;
+      opt.textContent = v;
+      sel.appendChild(opt);
+    });
+  }
+
+  function openPopoverForChip(chipEl){
+    currentChipId = chipEl.dataset.chip;
+
+    const pop = document.getElementById("popover");
+    const title = document.getElementById("popoverTitle");
+    const sel = document.getElementById("popoverSelect");
+
+    title.textContent = chipTitles[currentChipId] || ("QA: " + currentChipId);
+
+    const current = new Set(chipState[currentChipId] || []);
+    Array.from(sel.options).forEach(o => o.selected = current.has(o.value));
+
+    const r = chipEl.getBoundingClientRect();
+    const left = Math.min(window.innerWidth - 410, Math.max(10, r.left));
+    const top  = Math.min(window.innerHeight - 340, Math.max(10, r.bottom + 12));
+
+    pop.style.left = left + "px";
+    pop.style.top = top + "px";
+    pop.style.display = "block";
+
+    document.querySelectorAll(".chip").forEach(c => c.dataset.open = "0");
+    chipEl.dataset.open = "1";
+  }
+
+  function closePopover(){
+    document.getElementById("popover").style.display = "none";
+    document.querySelectorAll(".chip").forEach(c => c.dataset.open = "0");
+    currentChipId = null;
+  }
+
+  function applyPopover(){
+    if (!currentChipId) return;
+
+    const sel = document.getElementById("popoverSelect");
+    const vals = Array.from(sel.selectedOptions).map(o => o.value);
+    chipState[currentChipId] = vals;
+
+    const chipEl = document.querySelector(`.chip[data-chip="${cssEscape(currentChipId)}"]`);
+    if (chipEl) {
+      const v = mentions(vals);
+      chipEl.textContent = v;
+      chipEl.dataset.empty = (v === "—") ? "1" : "0";
+    }
+    closePopover();
+  }
+
+  document.addEventListener("click", (e) => {
+    const chipEl = e.target.closest && e.target.closest(".chip");
+    if (chipEl) { openPopoverForChip(chipEl); return; }
+    const pop = document.getElementById("popover");
+    if (pop.style.display === "block" && !e.target.closest(".popover")) closePopover();
+  });
+
+  function generateTodayText(){
+    const editor = document.getElementById("todayEditor");
+    const clone = editor.cloneNode(true);
+
+    clone.querySelectorAll(".chip").forEach(ch => {
+      const id = ch.dataset.chip;
+      ch.replaceWith(mentions(chipState[id]));
+    });
+
+    return clone.innerText.trim();
+  }
+
+  function generateOutput(){
+    const yesterday = document.getElementById("yesterday").value.trim();
+    const problems = document.getElementById("problems").value.trim();
+    const today = generateTodayText();
+
+    document.getElementById("output").textContent =
+`**Вчера:**
+${yesterday}
+
+**Сегодня:**
+${today}
+
+**Проблемы:**
+${problems}`;
+  }
+
+  function copyOutput(){
+    const output = document.getElementById("output").textContent.trim();
+    const ta = document.createElement("textarea");
+    ta.value = output;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert("Output copied to clipboard");
+  }
+
+  function escapeHtml(s){
+    return String(s)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+  function cssEscape(s){
+    if (window.CSS && CSS.escape) return CSS.escape(s);
+    return String(s).replace(/["\\]/g, "\\$&");
+  }
+
+  populatePopoverOptions();
+  fillDefaults();
+</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,8 +12,6 @@
       --text:#111827;
       --muted:#6b7280;
       --border:#e6eaf2;
-
-      --primary1:#2f80ed;
 
       --shadow: 0 18px 60px rgba(17,24,39,.10);
       --shadow2: 0 10px 30px rgba(17,24,39,.08);
@@ -48,15 +46,9 @@
       padding: 48px 18px 72px;
     }
 
-    body, button, input, select, textarea, pre {
-      font-family: var(--font);
-    }
+    body, button, input, select, textarea, pre { font-family: var(--font); }
 
-    .container{
-      width:100%;
-      max-width: var(--container);
-      margin: 0 auto;
-    }
+    .container{ width:100%; max-width: var(--container); margin: 0 auto; }
 
     .card{
       background: var(--card);
@@ -77,9 +69,15 @@
       letter-spacing: -0.01em;
     }
 
-    .field{
-      margin-top: 14px;
+    .hint{
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+      text-align: left;
     }
+
+    .field{ margin-top: 14px; }
 
     label{
       display:block;
@@ -120,32 +118,26 @@
       padding: 6px 12px;
       font-weight: 400;
       cursor: pointer;
-      transition: transform .06s ease, background .18s ease, filter .18s ease, border-color .18s ease;
+      transition: transform .06s ease, background .18s ease;
       font-size: 14px;
       letter-spacing: -0.01em;
       line-height: 20px;
       box-shadow: none !important;
     }
     button:active{ transform: translateY(1px); }
+
     button:focus{ outline:none; }
     button:focus-visible{ box-shadow: 0 0 0 4px rgba(47,128,237,.20) !important; }
 
-    .btn-primary{
-      color:#fff;
-      background: #2589ff;
-    }
-    .btn-primary:hover{
-      background: #0069E5;
-    }
+    .btn-primary{ color:#fff; background: #2589ff; }
+    .btn-primary:hover{ background: #0069E5; }
 
     .btn-secondary{
       color: var(--secondaryText);
       background:#ffffff;
       border: 1px solid #D1D4D6;
     }
-    .btn-secondary:hover{
-      background:#EFF6FF;
-    }
+    .btn-secondary:hover{ background:#EFF6FF; }
 
     pre{
       background:#0b1220;
@@ -161,38 +153,163 @@
       min-height: 72px;
     }
 
-    .stack{
+    .stack{ display:grid; gap: 18px; margin-top: 18px; }
+
+    /* Searchable select UI */
+    .selectSearch{ position: relative; }
+
+    .selectSearch .dropdown{
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 12px;
+      display: none;
+      z-index: 999;
+    }
+    .selectSearch[data-open="1"] .dropdown{ display: block; }
+
+    .selectSearch .list{
+      max-height: 260px;
+      overflow: auto;
+      padding: 6px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .selectSearch .item{
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      color: var(--text);
+    }
+    .selectSearch .item:hover{ background: #EFF6FF; }
+    .selectSearch .item[aria-selected="true"]{ background: rgba(47,128,237,.14); }
+
+    .srOnly{
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      border:0;
+    }
+
+    /* Input/textarea clear "X" button (no border) */
+    .clearable{ position: relative; }
+    .clearable input{ padding-right: 34px; }
+
+    .clearable textarea{
+      padding-right: 34px;
+    }
+
+    .clearX{
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      width: 22px;
+      height: 22px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+
+      border: 0;              /* <- no border */
+      background: transparent; /* <- no border background */
+      color: rgba(17,24,39,.45);
+      font-size: 18px;
+      line-height: 1;
+      padding: 0;
+      cursor: pointer;
+      user-select: none;
+    }
+    .clearX:hover{ color: rgba(17,24,39,.75); background: rgba(17,24,39,.04); border-radius: 8px; }
+    .clearX:focus-visible{ box-shadow: 0 0 0 4px rgba(47,128,237,.20) !important; border-radius: 10px; }
+
+    /* For textarea: place X near top-right (looks more natural) */
+    .clearable--textarea .clearX{
+      top: 14px;
+      transform: none;
+    }
+
+    .clearable[data-hasvalue="1"] .clearX{ display: inline-flex; }
+
+    .editorGrid{
       display:grid;
+      grid-template-columns: 1.1fr .9fr;
       gap: 18px;
-      margin-top: 18px;
+      align-items: start;
+    }
+    @media (max-width: 920px){
+      .editorGrid{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
   <div class="container">
+
     <div class="card">
       <h1 class="sectionHeading">Запрос на откат</h1>
 
       <form id="RevertForm">
         <div class="field">
           <label for="pr">PR:</label>
-          <input type="text" id="pr" name="pr" required />
+          <div class="clearable" id="wrapPr" data-hasvalue="0">
+            <input type="text" id="pr" name="pr" required />
+            <button class="clearX" type="button" aria-label="Очистить PR" title="Очистить"
+              onclick="clearField('pr')">×</button>
+          </div>
         </div>
 
         <div class="field">
           <label for="commit">Коммит:</label>
-          <input type="text" id="commit" name="commit" required />
+          <div class="clearable" id="wrapCommit" data-hasvalue="0">
+            <input type="text" id="commit" name="commit" required />
+            <button class="clearX" type="button" aria-label="Очистить коммит" title="Очистить"
+              onclick="clearField('commit')">×</button>
+          </div>
         </div>
 
         <div class="field">
-          <label for="dev">Разработчик:</label>
-          <select id="dev" name="dev" required></select>
+          <label for="devSelect">Разработчик:</label>
+
+          <select id="devSelect" name="dev" required class="srOnly"></select>
+
+          <div id="devSearch" class="selectSearch" data-open="0">
+            <input
+              id="devSearchInput"
+              type="text"
+              placeholder="Поиск по разработчикам…"
+              autocomplete="off"
+              aria-label="Поиск разработчика"
+            />
+
+            <div class="dropdown" id="devDropdown" role="listbox" aria-label="Разработчики">
+              <div class="list" id="devSearchList"></div>
+              <div class="hint">Клик по выбранному значению ещё раз — сбросит выбор (список останется открыт).</div>
+            </div>
+          </div>
         </div>
 
         <div class="field">
           <label for="prichina">Причина:</label>
-          <textarea id="prichina" name="prichina" required></textarea>
+          <div class="clearable clearable--textarea" id="wrapPrichina" data-hasvalue="0">
+            <textarea id="prichina" name="prichina" required></textarea>
+            <button class="clearX" type="button" aria-label="Очистить причину" title="Очистить"
+              onclick="clearField('prichina')">×</button>
+          </div>
         </div>
 
         <div class="field">
@@ -211,49 +328,120 @@
         <h2 class="sectionHeading">Готовое сообщение</h2>
         <pre id="output"></pre>
         <div class="actions">
-          <button class="btn-primary" id="copyButton" type="button" onclick="copyOutput()">Скопировать</button>
+          <button class="btn-primary" type="button" onclick="copyOutput()">Скопировать</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="sectionHeading">Редактор списка разработчиков</h2>
+
+        <div class="editorGrid">
+          <div>
+            <label for="devListEditor">Список (по одному логину в строке):</label>
+            <textarea id="devListEditor" rows="14" spellcheck="false"></textarea>
+
+            <div class="actions">
+              <button class="btn-primary" type="button" onclick="saveDevelopersFromEditor()">Сохранить список</button>
+              <button class="btn-secondary" type="button" onclick="resetDevelopersToDefault()">Сбросить к дефолтному</button>
+            </div>
+
+            <div class="hint">
+              Список сохраняется в <b>localStorage</b>. Пустые строки игнорируются, trim применяется, дубли убираются.
+            </div>
+          </div>
+
+          <div>
+            <label>Быстрые действия:</label>
+            <div class="actions" style="margin-top:0;">
+              <button class="btn-secondary" type="button" onclick="sortDevelopers()">Отсортировать A→Z</button>
+              <button class="btn-secondary" type="button" onclick="dedupeDevelopers()">Убрать дубли</button>
+              <button class="btn-secondary" type="button" onclick="trimDevelopers()">Trim пробелы</button>
+            </div>
+            <div class="hint">Чтобы применить к селекту — нажми «Сохранить список».</div>
+          </div>
         </div>
       </div>
     </div>
+
   </div>
 
   <script>
-    const developers = [
+    const STORAGE_KEY_DEVS = "revertForm.developers.v1";
+
+    const defaultDevelopers = [
       "@faust.v",
-  "@fedoseev.m",
-  "@fedotov.a",
-  "@govorov.v ",
-  "@grigorieva.o",
-  "@gubkin.vi",
-  "@hi",
-  "@homyakov.a",
-  "@kharkov.p",
-  "@kn",
-  "@kondratov.d",
-  "@konnov.a",
-  "@kozlov.n ",
-  "@lg ",
-  "@lobashkov.p",
-  "@mukhametshin.a",
-  "@odegov.a",
-  "@okhotnikov.a",
-  "@panchenko.s",
-  "@petrov.an",
-  "@petrunenkova.s",
-  "@plesheshnikova.a",
-  "@ponomarev.a",
-  "@safronova.d ",
-  "@shironosova.a",
-  "@spitsyna.i",
-  "@trubinov.a",
-  "@unychenko.d",
-  "@usov.a",
-  "@yarullina.a",
-  "@zakharov.i",
+      "@fedoseev.m",
+      "@fedotov.a",
+      "@govorov.v ",
+      "@grigorieva.o",
+      "@gubkin.vi",
+      "@hi",
+      "@homyakov.a",
+      "@kharkov.p",
+      "@kn",
+      "@kondratov.d",
+      "@konnov.a",
+      "@kozlov.n ",
+      "@lg ",
+      "@lobashkov.p",
+      "@mukhametshin.a",
+      "@odegov.a",
+      "@okhotnikov.a",
+      "@panchenko.s",
+      "@petrov.an",
+      "@petrunenkova.s",
+      "@plesheshnikova.a",
+      "@ponomarev.a",
+      "@safronova.d ",
+      "@shironosova.a",
+      "@spitsyna.i",
+      "@trubinov.a",
+      "@unychenko.d",
+      "@usov.a",
+      "@yarullina.a",
+      "@zakharov.i",
     ];
+
     const wher = ["На бета сервере", "На бою"];
 
-    const populateDropdown = (id, options) => {
+    function normalizeList(arr){
+      const out = [];
+      const seen = new Set();
+      for (const raw of arr) {
+        const v = String(raw ?? "").trim();
+        if (!v) continue;
+        if (seen.has(v)) continue;
+        seen.add(v);
+        out.push(v);
+      }
+      return out;
+    }
+
+    function toLines(arr){ return arr.join("\n"); }
+    function fromLines(text){
+      return String(text || "")
+        .split(/\r?\n/)
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+
+    function saveDevsToStorage(devs){
+      localStorage.setItem(STORAGE_KEY_DEVS, JSON.stringify(devs));
+    }
+
+    function loadDevsFromStorage(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY_DEVS);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return null;
+        return normalizeList(parsed);
+      }catch(e){
+        return null;
+      }
+    }
+
+    function populateSelect(id, options){
       const dropdown = document.getElementById(id);
       dropdown.innerHTML = "";
       options.forEach((option) => {
@@ -262,22 +450,228 @@
         opt.textContent = option;
         dropdown.appendChild(opt);
       });
-    };
+    }
+    populateSelect("where", wher);
 
-    populateDropdown("dev", developers);
-    populateDropdown("where", wher);
+    // ---- Searchable dev select
+    let developers = [];
 
-    const generateOutput = () => {
+    function clearDevSelection(){
+      document.getElementById("devSelect").value = "";
+      document.getElementById("devSearchInput").value = "";
+      renderDevSearchList("");
+    }
+
+    function setDevelopers(newList){
+      developers = normalizeList(newList);
+
+      const sel = document.getElementById("devSelect");
+      const current = sel.value;
+
+      sel.innerHTML = "";
+      developers.forEach(v => {
+        const opt = document.createElement("option");
+        opt.value = v;
+        opt.textContent = v;
+        sel.appendChild(opt);
+      });
+
+      if (current && developers.includes(current)) sel.value = current;
+      else sel.value = "";
+
+      renderDevSearchList(document.getElementById("devSearchInput").value || "");
+      syncDevInputDisplay();
+    }
+
+    function syncDevInputDisplay(){
+      const sel = document.getElementById("devSelect");
+      const input = document.getElementById("devSearchInput");
+      const open = document.getElementById("devSearch").dataset.open === "1";
+      if (open) return;
+      input.value = sel.value ? sel.value : "";
+    }
+
+    function openDevSearch(){
+      document.getElementById("devSearch").dataset.open = "1";
+      const input = document.getElementById("devSearchInput");
+      input.focus();
+      input.select();
+      renderDevSearchList(input.value || "");
+    }
+
+    function closeDevSearch(){
+      document.getElementById("devSearch").dataset.open = "0";
+      syncDevInputDisplay();
+    }
+
+    function toggleChooseDeveloper(value){
+      const sel = document.getElementById("devSelect");
+      const current = sel.value || "";
+
+      if (current === value){
+        clearDevSelection();
+        document.getElementById("devSearch").dataset.open = "1";
+        document.getElementById("devSearchInput").focus();
+        return;
+      }
+
+      sel.value = value;
+      closeDevSearch();
+    }
+
+    function renderDevSearchList(filterText){
+      const list = document.getElementById("devSearchList");
+      const q = String(filterText || "").trim().toLowerCase();
+      const current = document.getElementById("devSelect").value || "";
+
+      const items = developers.filter(v => v.toLowerCase().includes(q));
+      list.innerHTML = "";
+
+      if (!items.length){
+        const div = document.createElement("div");
+        div.className = "hint";
+        div.style.marginTop = "0";
+        div.textContent = "Ничего не найдено.";
+        list.appendChild(div);
+        return;
+      }
+
+      items.forEach(v => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "item";
+        btn.textContent = v;
+        btn.setAttribute("role", "option");
+        btn.setAttribute("aria-selected", current === v ? "true" : "false");
+
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleChooseDeveloper(v);
+        });
+
+        list.appendChild(btn);
+      });
+    }
+
+    (function initDevSearchUI(){
+      const root = document.getElementById("devSearch");
+      const input = document.getElementById("devSearchInput");
+      const dropdown = document.getElementById("devDropdown");
+
+      input.addEventListener("focus", openDevSearch);
+      input.addEventListener("click", openDevSearch);
+
+      input.addEventListener("input", () => {
+        if (root.dataset.open !== "1") root.dataset.open = "1";
+        renderDevSearchList(input.value);
+      });
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") { e.preventDefault(); closeDevSearch(); return; }
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const typed = input.value.trim();
+          const exact = developers.find(v => v.toLowerCase() === typed.toLowerCase());
+          if (exact) toggleChooseDeveloper(exact);
+        }
+      });
+
+      dropdown.addEventListener("click", (e) => e.stopPropagation());
+
+      document.addEventListener("click", (e) => {
+        if (root.dataset.open !== "1") return;
+        if (root.contains(e.target)) return;
+        closeDevSearch();
+      });
+    })();
+
+    // ---- Editable developers list
+    function refreshEditorFromCurrent(){
+      document.getElementById("devListEditor").value = toLines(developers);
+    }
+
+    function saveDevelopersFromEditor(){
+      const list = normalizeList(fromLines(document.getElementById("devListEditor").value));
+      saveDevsToStorage(list);
+      setDevelopers(list);
+      alert("Список разработчиков сохранён");
+    }
+
+    function resetDevelopersToDefault(){
+      const list = normalizeList(defaultDevelopers);
+      saveDevsToStorage(list);
+      setDevelopers(list);
+      refreshEditorFromCurrent();
+      alert("Список сброшен к дефолтному");
+    }
+
+    function sortDevelopers(){
+      const arr = normalizeList(fromLines(document.getElementById("devListEditor").value));
+      arr.sort((a,b) => a.localeCompare(b, "ru"));
+      document.getElementById("devListEditor").value = toLines(arr);
+    }
+
+    function dedupeDevelopers(){
+      const arr = normalizeList(fromLines(document.getElementById("devListEditor").value));
+      document.getElementById("devListEditor").value = toLines(arr);
+    }
+
+    function trimDevelopers(){
+      const arr = fromLines(document.getElementById("devListEditor").value).map(s => s.trim());
+      document.getElementById("devListEditor").value = toLines(arr.filter(Boolean));
+    }
+
+    // ---- Clear buttons for PR/Commit/Reason
+    function setWrapHasValue(wrapId, has){
+      const el = document.getElementById(wrapId);
+      if (!el) return;
+      el.dataset.hasvalue = has ? "1" : "0";
+    }
+
+    function updateClearState(fieldId){
+      const el = document.getElementById(fieldId);
+      if (!el) return;
+      if (fieldId === "pr") setWrapHasValue("wrapPr", Boolean(el.value));
+      if (fieldId === "commit") setWrapHasValue("wrapCommit", Boolean(el.value));
+      if (fieldId === "prichina") setWrapHasValue("wrapPrichina", Boolean(el.value));
+    }
+
+    function clearField(fieldId){
+      const el = document.getElementById(fieldId);
+      if (!el) return;
+      el.value = "";
+      el.focus();
+      updateClearState(fieldId);
+    }
+
+    // attach listeners to toggle X visibility
+    ["pr","commit","prichina"].forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener("input", () => updateClearState(id));
+      updateClearState(id);
+    });
+
+    // ---- Output
+    function generateOutput(){
       const form = document.getElementById("RevertForm");
+      const devSel = document.getElementById("devSelect");
+
+      if (!devSel.value){
+        devSel.reportValidity();
+        openDevSearch();
+        return;
+      }
+
       document.getElementById("output").textContent = `
 **PR:** ${form.pr.value}
 **Коммит:** ${form.commit.value}
 **Разработчик:** ${form.dev.value}
 **Причина:** ${form.prichina.value}
 **Где:** ${form.where.value}`.trim();
-    };
+    }
 
-    const copyOutput = () => {
+    function copyOutput(){
       const output = document.getElementById("output");
       const textarea = document.createElement("textarea");
       textarea.value = output.textContent.trim();
@@ -286,7 +680,12 @@
       document.execCommand("copy");
       document.body.removeChild(textarea);
       alert("Output copied to clipboard");
-    };
+    }
+
+    // init devs
+    const stored = loadDevsFromStorage();
+    setDevelopers(stored && stored.length ? stored : defaultDevelopers);
+    refreshEditorFromCurrent();
   </script>
 </body>
 </html>

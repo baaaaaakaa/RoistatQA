@@ -84,7 +84,6 @@
       align-items: stretch;
     }
 
-    /* Нижние две кнопки — на всю ширину контейнера .btn-grid и по центру */
     .btn-grid > button:nth-child(4),
     .btn-grid > button:nth-child(5){
       grid-column: 1 / -1;
@@ -117,34 +116,30 @@
     }
     .btn-primary:hover{ background: #0069E5; }
 
-    /* Стендап: btn-secondary */
     .btn-secondary{
       color: var(--secondaryText);
       background:#ffffff;
       border: 1px solid #D1D4D6;
     }
-    .btn-secondary:hover{
-      background:#EFF6FF;
-    }
+    .btn-secondary:hover{ background:#EFF6FF; }
 
-    /* Запрос на откат: белый фон, красный бордер/текст, hover фон #FCCBCBB2 */
     .btn-revert{
       color:#F35050;
       background:#ffffff;
       border: 1px solid #F35050;
     }
-    .btn-revert:hover{
-      background:#FCCBCBB2;
-    }
+    .btn-revert:hover{ background:#FCCBCBB2; }
 
+    /* UPDATED: без бордера и тени */
     .imageWrap{
       width: 100%;
       max-width: 920px;
       border-radius: 14px;
       overflow: hidden;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      background: #fff;
+      background: transparent;
+
+      border: 0;
+      box-shadow: none;
 
       max-height: min(360px, 40vh);
     }
@@ -154,7 +149,7 @@
       max-height: min(360px, 40vh);
       display: block;
       object-fit: contain;
-      background: #fff;
+      background: transparent;
     }
 
     @media (max-width: 920px){
@@ -182,6 +177,7 @@
 <body>
   <div class="container">
     <div class="card">
+      <h2 class="sectionHeading">Полезные ссылки</h2>
 
       <div class="btn-grid">
         <button class="btn-primary" type="button" onclick="openInNewTab('https://hoppscotch.io/')">
